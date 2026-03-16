@@ -1,3 +1,4 @@
 [submodule "rocq-carve"]
 	path = rocq-carve
 	url = https://github.com/dzackon/rocq-carve.git
+	ignore = dirty
