@@ -57,3 +57,4 @@ RUN opam update -y
 RUN opam upgrade -y
 RUN eval `opam config env`
 RUN opam install -y coq-hammer
+ENV PATH="/home/cis5000/.opam/5.3.0/bin:$PATH"
