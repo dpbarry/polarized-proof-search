@@ -6,8 +6,11 @@
     "build": { 
 	"dockerfile": "Dockerfile"
     },
-	
-	"postCreateCommand": "git config --global --add safe.directory /workspaces/polarized-proof-search/rocq-carve && git submodule update --init --recursive && rocq makefile -f _CoqProject -o Makefile && cd rocq-carve && ./configure && make && cd ..",    
+	// Setting this to your specific user prevents permission errors
+    "remoteUser": "cis5000",
+
+    // This runs the shell script we talked about to handle submodules and make
+    "postCreateCommand": "bash .devcontainer/setup.sh",
     // Features to add to the dev container. More info: https://containers.dev/features.
     // "features": {},
 
