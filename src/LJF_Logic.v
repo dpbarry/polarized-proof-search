@@ -43,8 +43,8 @@ Inductive ufc : ctx -> o -> bool -> Prop :=
     ufc C R b ->
     ufc ((True, one) :: C) R b
 | ufc_L_False :
-  forall {C: ctx} {R: o},
-    ufc ((False, one) :: C) R true
+  forall {C: ctx} {R: o} {b: bool},
+    ufc ((False, one) :: C) R b
 (* with lfc : ctx -> o -> o -> Prop :=
 | lfc_R_l :
 | lfc_I_l :
