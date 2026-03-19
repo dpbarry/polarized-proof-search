@@ -1,11 +1,11 @@
-From CARVe Require Import list dill.
+From CARVe Require Import contexts.list algebras.dill.
 
 Inductive polarity : Type :=
 | Pos : polarity
 | Neg : polarity.
 
 Inductive o : Type :=
-| Atom  : polarity -> o          (* Atoms must have a polarity*)
+| Atom  : polarity -> nat -> o          (* Atoms must have a polarity*)
 | True  : o                   
 | False : o                   
 | AndP  : o -> o -> o 
@@ -15,8 +15,8 @@ Inductive o : Type :=
 
 Definition is_pos (A : o) : bool :=
   match A with
-  | Atom Pos => true
-  | Atom Neg => false
+  | Atom Pos _ => true
+  | Atom Neg _ => false
   | True     => true
   | False    => false
   | AndP _ _ => true
@@ -26,3 +26,31 @@ Definition is_pos (A : o) : bool :=
   end.
 
 Definition ctx : Type := @lctx o mult.
+
+                      (* bool : is rhs bracketed? *)
+Inductive ufc : ctx -> o -> bool -> Prop :=
+| ufc_L_f : 
+| ufc_R_f :
+| ufc_L_box :  
+| ufc_R_box : 
+| ufc_L_AndP :
+| ufc_R_AndN :
+| ufc_L_Or :
+| ufc_R_Impl :
+| ufc_L_True :
+| ufc_R_False :
+.
+with lfc : ctx -> o -> o -> Prop :=
+| lfc_R_l :
+| lfc_I_l :
+| lfc_L_AndN :
+| lfc_L_Impl :
+.
+with rfc : ctx -> o  -> Prop :=
+| rfc_R_r :
+| rfc_I_r :
+| rfc_R_AndP :
+| rfc_R_Or :
+| rfc_R_True :
+.
+
