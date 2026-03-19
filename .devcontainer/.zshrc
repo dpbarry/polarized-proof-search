@@ -10,4 +10,3 @@ precmd() {
 eval $(opam env)
 
 alias ls="ls --color"
-

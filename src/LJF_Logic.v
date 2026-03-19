@@ -1,13 +1,28 @@
-(* --- LJF Pure Logic Test (No External Imports) --- *)
-Inductive formula : Type :=
-| Atom : nat -> formula
-| And : formula -> formula -> formula
-| Or : formula -> formula -> formula.
+From CARVe Require Import list dill.
 
-(* Example usage *)
-Definition test_formula := And (Atom 1) (Or (Atom 2) (Atom 3)).
+Inductive polarity : Type :=
+| Pos : polarity
+| Neg : polarity.
 
-Lemma atom_zero_is_formula : formula.
-Proof.
-  exact (Atom 0).
-Qed.
+Inductive o : Type :=
+| Atom  : polarity -> o          (* Atoms must have a polarity*)
+| True  : o                   
+| False : o                   
+| AndP  : o -> o -> o 
+| AndN  : o -> o -> o
+| Or    : o -> o -> o 
+| Impl  : o -> o -> o.
+
+Definition is_pos (A : o) : bool :=
+  match A with
+  | Atom Pos => true
+  | Atom Neg => false
+  | True     => true
+  | False    => false
+  | AndP _ _ => true
+  | AndN _ _ => false
+  | Or _ _   => true
+  | Impl _ _ => false
+  end.
+
+Definition ctx : Type := @lctx o mult.
