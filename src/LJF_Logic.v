@@ -1,3 +1,4 @@
+From Stdlib Require Import List.
 From CARVe Require Import contexts.list algebras.dill.
 
 Inductive polarity : Type :=
@@ -29,28 +30,33 @@ Definition ctx : Type := @lctx o mult.
 
                       (* bool : is rhs bracketed? *)
 Inductive ufc : ctx -> o -> bool -> Prop :=
-| ufc_L_f : 
+(* | ufc_L_f : 
 | ufc_R_f :
 | ufc_L_box :  
 | ufc_R_box : 
 | ufc_L_AndP :
 | ufc_R_AndN :
 | ufc_L_Or :
-| ufc_R_Impl :
+| ufc_R_Impl : *)
 | ufc_L_True :
-| ufc_R_False :
-.
-with lfc : ctx -> o -> o -> Prop :=
+  forall {C: ctx} {R: o} {b: bool},
+    ufc C R b ->
+    ufc ((True, one) :: C) R b
+| ufc_L_False :
+  forall {C: ctx} {R: o},
+    ufc ((False, one) :: C) R true
+(* with lfc : ctx -> o -> o -> Prop :=
 | lfc_R_l :
 | lfc_I_l :
 | lfc_L_AndN :
-| lfc_L_Impl :
-.
-with rfc : ctx -> o  -> Prop :=
-| rfc_R_r :
+| lfc_L_Impl : *)
+with rfc : ctx -> o -> Prop :=
+(* | rfc_R_r :
 | rfc_I_r :
 | rfc_R_AndP :
-| rfc_R_Or :
+| rfc_R_Or : *)
 | rfc_R_True :
+  forall {C: ctx},
+  rfc C True
 .
 
