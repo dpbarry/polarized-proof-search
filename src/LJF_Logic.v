@@ -36,10 +36,27 @@ Inductive ufc : ctx -> o -> bool -> Prop :=
 (* | ufc_L_f : 
 | ufc_R_f :
 | ufc_L_box :  
-| ufc_R_box : 
+| ufc_R_box :*)
 | ufc_L_AndP :
+forall {C: ctx} {A: o} {B: o} {R: o} {b: bool},
+  join ((A, one) :: nil) C CA ->
+  join ((B, one) :: nil) CA CB ->
+  join ((AndP A B, one) :: nil) C C1 ->
+  ufc CB R b ->
+  ufc C1 R b
 | ufc_R_AndN :
-| ufc_L_Or : *)
+forall {C: ctx} {A: o} {B : o} {b : bool},
+  ufc C A b ->
+  ufc C B b ->
+  ufc C (AndN A B) b
+| ufc_L_Or : 
+forall {C : ctx} {A: o} {B: o} {R: o} {b: bool},
+  join ((A, one) :: nil) C CA ->
+  join ((B, one) :: nil) C CB ->
+  join ((Or A B, one) :: nil) C C1 ->
+  ufc CA R b ->
+  ufc CB R b ->
+  ufc C1 R b
 | ufc_R_Impl :
   forall {C Co C1: ctx} {A: o} {R: o} {b: bool},
     join ((A, omega) :: nil) C Co ->
