@@ -31,7 +31,7 @@ Definition ctx : Type := @lctx o mult.
 
 (* TODO use proper CARVe merge or update functions instead of cons *)
 
-                      (* bool : is rhs bracketed? *)
+                    (* bool : is rhs bracketed? *)
 Inductive ufc : ctx -> o -> bool -> Prop :=
 (* | ufc_L_f : 
 | ufc_R_f :
@@ -84,6 +84,7 @@ with lfc : ctx -> o -> o -> Prop :=
     lfc C (Impl A B) R
 
 
+                                   
 with rfc : ctx -> o -> Prop :=
 | rfc_R_r :
   forall {C: ctx} {N: o},
