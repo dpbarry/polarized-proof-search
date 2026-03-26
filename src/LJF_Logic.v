@@ -27,6 +27,12 @@ Definition is_pos (A : o) : bool :=
   | Impl _ _ => false
   end.
 
+Definition is_atomic (A : o) : bool :=
+  match A with
+  | Atom _ _ => true
+  | _ => false
+  end.
+
 Definition ctx : Type := @lctx o mult.
 
 (* TODO use proper CARVe merge or update functions instead of cons *)
@@ -57,11 +63,32 @@ Inductive ufc : ctx -> o -> bool -> Prop :=
     ufc C1 R b
 (*First o for focus, second o for R*)
 with lfc : ctx -> o -> o -> Prop :=
-(*| lfc_R_l :
+| lfc_R_l :
+  forall {C C1: ctx} {P : o} {R : o},
+    join ((P, one) :: nil) C C1 ->
+    exh C ->
+    is_true(is_pos(P)) ->
+    ufc C R true ->
+    lfc C P R
 | lfc_I_l :
-| lfc_L_AndN : *)
+  forall {C: ctx} {N : o},
+    exh(C) ->
+    ~(is_true(is_pos(N))) ->
+    is_true(is_atomic(N)) ->
+    lfc C N N
+| lfc_L_AndN_1 :
+  forall {C: ctx} {A1 A2 : o} {R : o},
+    exh(C) -> 
+    lfc C A1 R ->
+    lfc C (A1 AndN A2) R
+| lfc_L_AndN_2 :
+  forall {C: ctx} {A1 A2 : o} {R : o},
+    exh(C) -> 
+    lfc C A2 R ->
+    lfc C (A1 AndN A2) R
 | lfc_L_Impl : 
-  forall {C: ctx} {A:o} {B : o} {R : o}, 
+  forall {C: ctx} {A B : o} {R : o}, 
+    exh C ->
     rfc C A ->
     lfc C B R ->
     lfc C (Impl A B) R
@@ -75,6 +102,7 @@ with rfc : ctx -> o -> Prop :=
     rfc C N
 | rfc_I_r :
   forall {C1 C: ctx} {P: o},
+    has_entry C1 (P, omega) ->
     join ((P, omega) :: nil) C C1 ->
     exh C1 ->
     rfc C1 P
