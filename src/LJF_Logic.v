@@ -15,110 +15,132 @@ Inductive o : Type :=
 | Or    : o -> o -> o 
 | Impl  : o -> o -> o.
 
-Definition is_pos (A : o) : bool :=
-  match A with
-  | Atom Pos _ => true
-  | Atom Neg _ => false
-  | True     => true
-  | False    => true
-  | AndP _ _ => true
-  | AndN _ _ => false
-  | Or _ _   => true
-  | Impl _ _ => false
-  end.
+Inductive atomic : o -> Prop :=
+  | Is_atom : forall p n, atomic (Atom p n)
+.
 
-Definition is_atomic (A : o) : bool :=
-  match A with
-  | Atom _ _ => true
-  | _ => false
-  end.
+Inductive positive : o -> Prop := 
+  | Pos_atom : forall n, positive (Atom Pos n)
+  | Pos_true : positive True
+  | Pos_false : positive False
+  | Pos_and : forall A B, positive (AndP A B)
+  | Pos_or : forall A B, positive (Or A B)
+.
+
+Inductive negative : o -> Prop :=
+  | Neg_atom : forall n, negative (Atom Neg n)
+  | Neg_and : forall A B, negative (AndN A B)
+  | Neg_imp : forall A B, negative (Impl A B)
+.
+
+(*bracketable corresponds to formulae that can be put in brackets,
+ is either positive formula or negative atoms,
+ used in rule ufc_R_box*)
+Inductive bracketable : o -> Prop := 
+  | Bracketable_pos : forall D, positive D -> bracketable D
+  | Bracketable_neg_atom : forall D, atomic D -> negative D -> bracketable D
+.
+
+(*permeable corresponds to formulae that can be switched from linear context to structural,
+is either negative formula or positive atom,
+used in rule ufc_L_box*)
+Inductive permeable : o -> Prop := 
+  | Permeable_neg : forall C, negative C -> permeable C
+  | Permeable_pos_atom : forall C, atomic C -> positive C -> permeable C
+.
+
+Inductive state : Type :=
+  | Bracketed : state 
+  | Unbracketed : state.
 
 Definition ctx : Type := @lctx o mult.
 
 (* TODO use proper CARVe merge or update functions instead of cons *)
 
                     (* bool : is rhs bracketed? *)
-Inductive ufc : ctx -> o -> bool -> Prop :=
+Inductive ufc : ctx -> o -> state -> Prop :=
 | ufc_L_f :
-  forall {C: ctx} {N: o} {R: o},
+  forall {C: ctx} {N : o} {R : o},
     exh C ->
     has_entry C (N, omega) ->
-    ~(is_true (is_pos N)) ->
+    negative N ->
     lfc C N R ->
-    ufc C R true
+    ufc C R Bracketed
 | ufc_R_f :
   forall {C: ctx} {P: o},
     exh C ->
+    positive P ->
     rfc C P ->
-    ufc C P true
+    ufc C P Bracketed
 | ufc_L_box :
-  forall {C Co C1: ctx} {A: o} {R: o} {b: bool},
+  forall {C Co C1: ctx} {A : o} {R : o} {s : state},
     join ((A, omega) :: nil) C Co ->
     join ((A, one) :: nil) C C1 ->
-    ufc Co R b ->
-    ufc C1 R b
+    permeable A ->
+    ufc Co R s ->
+    ufc C1 R s
 | ufc_R_box :
   forall {C: ctx} {D: o},
-    ufc C D true ->
-    ufc C D false
+    bracketable D ->
+    ufc C D Bracketed ->
+    ufc C D Unbracketed
 | ufc_L_AndP :
-  forall {C CA CB C1: ctx} {A: o} {B: o} {R: o} {b: bool},
+  forall {C CA CB C1: ctx} {A: o} {B: o} {R: o} {s : state},
     join ((A, one) :: nil) C CA ->
     join ((B, one) :: nil) CA CB ->
     join ((AndP A B, one) :: nil) C C1 ->
-    ufc CB R b ->
-    ufc C1 R b
+    ufc CB R s ->
+    ufc C1 R s
 | ufc_R_AndN :
-  forall {C: ctx} {A: o} {B : o} {b : bool},
-    ufc C A b ->
-    ufc C B b ->
-    ufc C (AndN A B) b
+  forall {C: ctx} {A: o} {B : o},
+    ufc C A Unbracketed ->
+    ufc C B Unbracketed->
+    ufc C (AndN A B) Unbracketed
 | ufc_L_Or : 
-  forall {C CA CB C1: ctx} {A: o} {B: o} {R: o} {b: bool},
+  forall {C CA CB C1: ctx} {A: o} {B: o} {R: o} {s: state},
     join ((A, one) :: nil) C CA ->
     join ((B, one) :: nil) C CB ->
     join ((Or A B, one) :: nil) C C1 ->
-    ufc CA R b ->
-    ufc CB R b ->
-    ufc C1 R b
+    ufc CA R s ->
+    ufc CB R s ->
+    ufc C1 R s
 | ufc_R_Impl :
   forall {C C1: ctx} {A: o} {B: o},
     join ((A, one) :: nil) C C1 ->
-    (* TODO ensure that this doesnt need brackets *)
-    ufc C1 B false ->
-    ufc C (Impl A B) false
+    ufc C1 B Unbracketed ->
+    ufc C (Impl A B) Unbracketed
 | ufc_L_True :
-  forall {C C1: ctx} {R: o} {b: bool},
+  forall {C C1: ctx} {R: o} {s: state},
     join ((True, one) :: nil) C C1 ->
-    ufc C R b ->
-    ufc C1 R b
+    ufc C R s ->
+    ufc C1 R s
 | ufc_L_False :
-  forall {C: ctx} {R: o} {b: bool},
+  forall {C: ctx} {R: o} {s: state},
     has_entry C (False, one) ->
-    ufc C R b
+    ufc C R s
 (*First o for focus, second o for R*)
 with lfc : ctx -> o -> o -> Prop :=
 | lfc_R_l :
   forall {C C1: ctx} {P : o} {R : o},
     join ((P, one) :: nil) C C1 ->
     exh C ->
-    is_true(is_pos(P)) ->
-    ufc C R true ->
+    positive P ->
+    ufc C1 R Bracketed ->
     lfc C P R
 | lfc_I_l :
   forall {C: ctx} {N : o},
-    exh(C) ->
-    ~(is_true(is_pos(N))) ->
-    is_true(is_atomic(N)) ->
+    exh C ->
+    negative N ->
+    atomic N ->
     lfc C N N
 | lfc_L_AndN_1 :
   forall {C: ctx} {A1 A2 : o} {R : o},
-    exh(C) -> 
+    exh C -> 
     lfc C A1 R ->
     lfc C (AndN A1 A2) R
 | lfc_L_AndN_2 :
   forall {C: ctx} {A1 A2 : o} {R : o},
-    exh(C) -> 
+    exh C -> 
     lfc C A2 R ->
     lfc C (AndN A1 A2) R
 | lfc_L_Impl : 
@@ -132,12 +154,14 @@ with rfc : ctx -> o -> Prop :=
 | rfc_R_r :
   forall {C: ctx} {N: o},
     exh C ->
-    ufc C N false ->
+    ufc C N Unbracketed ->
     rfc C N
 | rfc_I_r :
   forall {C: ctx} {P: o},
-    has_entry C (P, omega) ->
     exh C ->
+    has_entry C (P, omega) ->
+    positive P ->
+    atomic P ->
     rfc C P
 | rfc_R_AndP :
   forall {C: ctx} {A: o} {B: o},
@@ -146,15 +170,15 @@ with rfc : ctx -> o -> Prop :=
     rfc C B ->
     rfc C (AndP A B)
 | rfc_R_Or_1 :
-  forall {C: ctx} {A: o} {B: o},
+  forall {C: ctx} {A1 A2: o},
     exh C ->
-    rfc C A ->
-    rfc C (Or A B)
+    rfc C A1 ->
+    rfc C (Or A1 A2)
 | rfc_R_Or_2 :
-  forall {C: ctx} {A: o} {B: o},
+  forall {C: ctx} {A1 A2: o},
     exh C ->
-    rfc C B ->
-    rfc C (Or A B)
+    rfc C A2 ->
+    rfc C (Or A1 A2)
 | rfc_R_True :
   forall {C: ctx},
     exh C ->
