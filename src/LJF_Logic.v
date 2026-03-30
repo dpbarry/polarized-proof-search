@@ -101,9 +101,9 @@ Inductive ufc : ctx -> o -> state -> Prop :=
     ufc ((B2, one) :: C1) K s ->
     ufc C K s
 | ufc_R_Impl :
-  forall {C : ctx} {B: o} {E: o},
-    ufc ((B, one) :: C) E Unbracketed ->
-    ufc C (Impl B E) Unbracketed
+  forall {C : ctx} {B1 B2: o},
+    ufc ((B1, one) :: C) B2 Unbracketed ->
+    ufc C (Impl B1 B2) Unbracketed
 | ufc_L_True :
   forall {C C1: ctx}  {K: o} {s: state},
     has_entry C (True, one) ->
@@ -139,11 +139,11 @@ with lfc : ctx -> o -> o -> Prop :=
     lfc C B2 K ->
     lfc C (AndN B1 B2) K
 | lfc_L_Impl : 
-  forall {C: ctx} {B E : o}  {K : o}, 
+  forall {C: ctx} {B1 B2 : o}  {K : o}, 
     exh C ->
-    rfc C B ->
-    lfc C E K ->
-    lfc C (Impl B E) K
+    rfc C B1 ->
+    lfc C B2 K ->
+    lfc C (Impl B1 B2) K
    
 with rfc : ctx -> o -> Prop :=
 | rfc_R_r :
