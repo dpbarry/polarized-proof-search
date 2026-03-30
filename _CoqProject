@@ -3,5 +3,5 @@
 -Q rocq-carve/msl VST.msl
 -R src LJF
 
-rocq-carve/src/LJF_Logic.v
-rocq-carve/src/LJF_Test.v
+src/LJF_Logic.v
+src/LJF_Test.v
