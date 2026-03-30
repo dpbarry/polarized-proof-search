@@ -191,4 +191,36 @@ Lemma True_proveable: (rfc nil True).
   apply I.
 Qed.
 
-Print True_proveable.
+Ltac T_exh := 
+  simpl; 
+  repeat split; 
+  try (apply halo); 
+  try (apply halz); 
+  try (apply I)
+.
+
+Ltac T_has_entry :=
+  match goal with
+  | [|- has_entry ?G (?a, ?m)] => simpl; repeat (left; reflexivity || right)
+  | _ => fail
+  end
+.
+
+Lemma Fibonnaci_forward_chaining : forall (x y z : nat),
+  let a := Atom Pos x in
+  let b := Atom Pos y in
+  let c := Atom Neg z in
+  let G := (a, omega) :: (Impl a b, omega) :: (Impl b c, omega) :: nil in
+  lfc G (Impl a b) c.
+Proof. 
+  intros x y z a b c G.
+  apply lfc_L_Impl.
+    - T_exh.
+    - apply rfc_I_r.
+      + T_exh.
+      + T_has_entry.
+      + constructor.
+      + constructor.
+    - eapply (@lfc_R_l G _ b c).
+      + simpl. constructor. 
+
