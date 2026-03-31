@@ -212,6 +212,6 @@ Ltac T_bracketable := match goal with
   | [|- bracketable ?a ] => solve [
         (apply Bracketable_neg_atom ; [> apply Is_atom | apply Neg_atom ]) |
         (apply Bracketable_pos; constructor)
-    ] || fail "Given predicate is not permeable"
+    ] || fail "Given predicate is not bracketable"
   end
 .
