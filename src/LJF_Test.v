@@ -3,7 +3,7 @@ From Stdlib Require Import List.
 From CARVe Require Import contexts.list algebras.dill.
 From VST.msl Require Import sepalg.
 
-Require Import LJF_Logic.
+From LJF Require Import LJF_Logic.
 
 Ltac T_exh := 
   match goal with
@@ -29,7 +29,6 @@ Ltac T_permeable := match goal with
         (apply Permeable_pos_atom ; [> apply Is_atom | apply Pos_atom ]) |
         (apply Permeable_neg; constructor)
     ] || fail "Given predicate is not permeable"
-  (* | _ => fail "Goal is not a permeable predicate" *)
   end
 .
 

@@ -5,3 +5,4 @@
 
 src/LJF_Logic.v
 src/LJF_Test.v
+src/LJF_Prover.v
