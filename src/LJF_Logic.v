@@ -180,6 +180,7 @@ with rfc : ctx -> o -> Prop :=
     rfc C True
 .
 
+
 Ltac T_exh := 
   match goal with
     | [|- exh ?C ] => solve [simpl; 
@@ -195,6 +196,22 @@ Ltac T_exh :=
 Ltac T_has_entry :=
   match goal with
   | [|- has_entry ?C (?a, ?m)] => solve [simpl; repeat ((left; reflexivity) || right)]
-  | _ => fail "Goal is not a entry lookup predicate"
+    || fail "Goal is not an entry lookup predicate"
+  end
+.
+
+Ltac T_permeable := match goal with
+  | [|- permeable ?a ] => solve [
+        (apply Permeable_pos_atom ; [> apply Is_atom | apply Pos_atom ]) |
+        (apply Permeable_neg; constructor)
+    ] || fail "Given predicate is not permeable"
+  end
+.
+
+Ltac T_bracketable := match goal with
+  | [|- bracketable ?a ] => solve [
+        (apply Bracketable_neg_atom ; [> apply Is_atom | apply Neg_atom ]) |
+        (apply Bracketable_pos; constructor)
+    ] || fail "Given predicate is not bracketable"
   end
 .
