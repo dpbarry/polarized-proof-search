@@ -197,33 +197,45 @@ Ltac T_has_entry := solve [
 
 Ltac T_positive := solve 
   [match goal with
-  | [|- positive (Atom Pos _)] => apply Pos_atom ; apply Is_atom
-  | [|- positive True] => apply Pos_true
-  | [|- positive False] => apply Pos_false
-  | [|- positive (AndP _ _)] => apply Pos_and
-  | [|- positive (Or _ _)] => apply Pos_or
+  | [|- positive ?a] => let a' := (eval cbv delta in a) in
+    match a' with
+    | Atom Pos _ => apply Pos_atom ; apply Is_atom
+    | True => apply Pos_true
+    | False => apply Pos_false
+    | AndP _ _ => apply Pos_and
+    | Or _ _ => apply Pos_or
+    end
   end] || fail "Goal is not a positive predicate, or require prooving positivity of a negative formula"
 .
 
 Ltac T_negative := solve
   [match goal with
-  | [|- negative (Atom Neg _)] => apply Neg_atom; apply Is_atom
-  | [|- negative (AndN _ _)] => apply Neg_and
-  | [|- negative (Impl _ _)] => apply Neg_imp
+  | [|- negative ?a] => let a' := (eval cbv delta in a) in
+    match a' with
+    | Atom Neg _ => apply Neg_atom; apply Is_atom
+    | AndN _ _ => apply Neg_and
+    | Impl _ _ => apply Neg_imp
+    end
   end] || fail "Goal is either not a negative predicate, or require prooving negativity of a positive formula"
 .
 
-Ltac T_permeable := solve 
+
+Ltac T_permeable := solve
   [match goal with 
-  | [|- permeable (Atom Pos _)] => apply Permeable_pos_atom ; [> apply Is_atom | apply Pos_atom]
-  | [|- permeable _] => apply Permeable_neg ; T_negative
-  end] || fail "Goal is either not a permeable predicate, or require prooving permeability of a positive non-atom"
-.
+  | [|- permeable ?a ] => let a' := (eval cbv delta in a) in
+    match a' with
+    | Atom Pos _ => apply Permeable_pos_atom; [apply Is_atom | apply Pos_atom]
+    | _ => apply Permeable_neg; T_negative
+    end
+  end] || fail "Goal is either not a permeable predicate, or require prooving permeability of a positive non-atom".
 
 Ltac T_bracketable := solve
   [match goal with
-  | [|- bracketable (Atom Neg _)] => apply Bracketable_neg_atom ; [> apply Is_atom | apply Neg_atom ]
-  | [|- bracketable _] => apply Bracketable_pos ; T_positive
+  | [|- bracketable ?a ] => let a' := (eval cbv delta in a) in
+    match a' with
+    | Atom Neg _ => apply Bracketable_neg_atom ; [> apply Is_atom | apply Neg_atom ]
+    | _ => apply Bracketable_pos ; T_positive
+    end
   end] || fail "Goal is either not a bracketable predicate, or require prooving bracketability of a positive non-atom"
 .
 
