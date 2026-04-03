@@ -239,11 +239,10 @@ Ltac T_bracketable := solve
   end] || fail "Goal is either not a bracketable predicate, or require prooving bracketability of a positive non-atom"
 .
 
-(* Maybe consider converting this in Ltac2, seems like exceptions can be treaten more cleanly *)
 (*T_rfc goes through the Right focus phase. Leaves an ufc subgoal when the phase ends *)
 Ltac T_rfc := 
   match goal with
-  | [|- rfc ?c ?b] => let b' := (eval cbv delta in b) in
+  | [|- rfc _ ?b] => let b' := (eval cbv delta in b) in
     lazymatch b' with
     (* Right focus on positive atom, must solve the branch*)
     | Atom Pos _ => solve [apply rfc_I_r ; [> T_exh | T_has_entry | apply Pos_atom | apply Is_atom]]
@@ -267,7 +266,7 @@ end
 (*T_lfc goes through the Left Focus phase. Leaves an ufc subgoal when the phase ends*)
 Ltac  T_lfc :=
   match goal with 
-  | [|- lfc ?c ?b ?k] => let b' := (eval cbv delta in b) in
+  | [|- lfc _ ?b _] => let b' := (eval cbv delta in b) in
     lazymatch b' with
     (* Left focus on negative atom, must solve the branch*)
     | Atom Neg _ => solve [apply lfc_I_l ; [>  T_exh | apply Neg_atom | apply Is_atom ]]
@@ -284,4 +283,16 @@ Ltac  T_lfc :=
   end
 .
 
-
+(*T_ufc_bracket goes through a bracketting phase. We start we an unbracketted ufc sequent, and get a bracketed ufc sequent.
+This will allow us to go through a emptying phase of the linear context after*)
+Ltac T_ufc_bracket :=
+  match goal with
+  | [|- ufc _ ?k Unbracketed] =>
+    let k' := (eval cbv delta in k) in
+    lazymatch k' with
+    | AndN _ _ => apply ufc_R_AndN ; [> T_ufc_bracket | T_ufc_bracket]
+    | Impl _ _ => apply ufc_R_Impl ; T_ufc_bracket
+    | _ => apply ufc_R_box ; [> T_bracketable | idtac]
+    end
+  end
+.

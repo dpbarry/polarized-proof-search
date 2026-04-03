@@ -39,14 +39,13 @@ Lemma Fibonnaci_backward_chaining : forall (x y z : nat),
 Proof.
   intros.
   T_lfc.
-  apply ufc_R_box.
-    - T_bracketable.
-    - eapply ufc_L_f.
-      + T_exh.
-      + simpl. right. left. reflexivity.
-      + T_negative.
-      + T_lfc.
-Qed. 
+  T_ufc_bracket.
+  eapply ufc_L_f.
+  - T_exh.
+  - simpl. right. left. reflexivity.
+  - T_negative.
+  - T_lfc.
+Qed.
   
 
 
