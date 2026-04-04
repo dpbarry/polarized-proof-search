@@ -87,7 +87,7 @@ Inductive ufc : ctx -> o -> state -> Prop :=
     has_entry C ((AndP B1 B2), one) ->
     upd_rel_ex C ((AndP B1 B2), one) ((AndP B1 B2), zero) C1 ->  
     ufc ((B1, one) :: (B2, one) :: C1) K s ->
-    ufc C1 K s
+    ufc C K s
 | ufc_R_AndN :
   forall {C: ctx} {B1 B2: o},
     ufc C B1 Unbracketed ->
