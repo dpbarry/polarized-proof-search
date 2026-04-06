@@ -3,8 +3,7 @@ From Stdlib Require Import List.
 From CARVe Require Import contexts.list algebras.dill.
 From VST.msl Require Import sepalg.
 
-From LJF Require Import LJF_Logic.
-From LJF Require Import LJF_Prover.
+From LJF Require Import LJF_Logic LJF_Prover.
 
 
 Lemma True_proveable: (rfc nil True).
@@ -13,7 +12,7 @@ Lemma True_proveable: (rfc nil True).
 Qed.
 
 
-Lemma Fibonnaci_backward_chaining_example : forall (x y z : nat),
+Lemma Impl_trans_backward_chaining_example : forall (x y z : nat),
   let a := Atom Pos x in
   let b := Atom Neg y in
   let c := Atom Neg z in
@@ -21,7 +20,7 @@ Lemma Fibonnaci_backward_chaining_example : forall (x y z : nat),
   lfc C (Impl b c) c.
 Proof. T_solve. Qed.
 
-Lemma Fibonnaci_forward_chaining : forall (x y z : nat),
+Lemma Impl_trans_forward_chaining : forall (x y z : nat),
   let a := Atom Pos x in
   let b := Atom Pos y in
   let c := Atom Neg z in
@@ -30,7 +29,7 @@ Lemma Fibonnaci_forward_chaining : forall (x y z : nat),
 (*Proof. T_solve. Qed.  INFINITE LOOP*)
 Admitted.
 
-Lemma Fibonnaci : forall (x y z : nat),
+Lemma Impl_trans : forall (x y z : nat),
   let a := Atom Neg x in
   let b := Atom Neg y in
   let c := Atom Neg z in
