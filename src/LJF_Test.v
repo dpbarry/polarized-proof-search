@@ -26,8 +26,8 @@ Lemma Impl_trans_forward_chaining : forall (x y z : nat),
   let c := Atom Neg z in
   let C := (a, omega) :: (Impl a b, omega) :: (Impl b c, omega) :: nil in
   lfc C (Impl a b) c.
-(*Proof. T_solve. Qed.  INFINITE LOOP*)
-Admitted.
+Proof. T_solve. Qed.
+
 
 Lemma Impl_trans : forall (x y z : nat),
   let a := Atom Neg x in
