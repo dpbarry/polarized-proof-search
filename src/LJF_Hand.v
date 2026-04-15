@@ -5,11 +5,11 @@ From VST.msl Require Import sepalg.
 
 From LJF Require Import LJF4_Rules LJF4_Prover LJF_SharedLogic.
 
-Lemma True_proveable: ufc nil True Unbracketed.
+Lemma True_proveable: ufc_ub nil True.
 Proof.
-  apply ufc_R_box.
+  apply ufc_ub_R_box.
   T_bracketable.
-  apply ufc_R_f.
+  apply ufc_b_R_f.
   T_exh.
   T_positive.
   apply rfc_R_True.
@@ -34,10 +34,10 @@ Proof.
     - apply lfc_R_l.
       + T_exh.
       + T_positive.
-      + eapply ufc_L_box.
+      + eapply ufc_b_L_box.
         -- eexists. constructor.
         -- T_permeable.
-        -- eapply ufc_L_f.
+        -- eapply ufc_b_L_f.
           ++ T_exh.
           ++ simpl. right. right. right. left. reflexivity.
           ++ T_negative.
@@ -68,9 +68,9 @@ Proof.
     - apply rfc_R_r.
       + T_exh.
       + constructor.
-      + apply ufc_R_box.
+      + apply ufc_ub_R_box.
         -- T_bracketable.
-        -- eapply ufc_L_f.
+        -- eapply ufc_b_L_f.
           ++ T_exh.
           ++ simpl. right. left. reflexivity.
           ++ constructor.

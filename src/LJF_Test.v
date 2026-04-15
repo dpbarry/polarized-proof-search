@@ -6,7 +6,7 @@ From VST.msl Require Import sepalg.
 From LJF Require Import LJF4_Rules LJF4_Prover LJF_SharedLogic.
 
 
-Lemma True_proveable: ufc nil True Unbracketed.
+Lemma True_proveable: ufc_ub nil True.
 Proof. T_solve. Qed.
 
 
@@ -32,5 +32,5 @@ Lemma Impl_trans : forall (x y z : nat),
   let b := Atom Neg y in
   let c := Atom Neg z in
   let C := (a, omega) :: (Impl a b, omega) :: (Impl b c, omega) :: nil in
-  ufc C (c) Unbracketed.
+  ufc_ub C c.
 Proof. T_solve. Qed.
