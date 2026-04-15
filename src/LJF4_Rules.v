@@ -63,7 +63,8 @@ Inductive ufc : ctx -> o -> state -> Prop :=
   forall {C: ctx}  {K: o},
     has_entry C (False, one) ->
     ufc C K Bracketed
-(*First o for focus, second o for K*)
+
+(* First o for focused assumption, second o for conclusion K *)
 with lfc : ctx -> o -> o -> Prop :=
 | lfc_R_l :
   forall {C : ctx} {P : o}  {K : o},

@@ -6,7 +6,7 @@ From VST.msl Require Import sepalg.
 From LJF Require Import LJF4_Rules LJF4_Prover LJF_SharedLogic.
 
 
-Lemma True_proveable: (ufc nil True Unbracketed).
+Lemma True_proveable: ufc nil True Unbracketed.
 Proof. T_solve. Qed.
 
 

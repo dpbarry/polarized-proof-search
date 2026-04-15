@@ -4,7 +4,7 @@ From VST.msl Require Import sepalg.
 
 Global Arguments upd_rel_ex  {R A} _ _ _ _.
 
-Inductive polarity : Type :=
+Variant polarity : Type :=
 | Pos : polarity
 | Neg : polarity.
 
@@ -17,7 +17,7 @@ Inductive o : Type :=
 | Or    : o -> o -> o
 | Impl  : o -> o -> o.
 
-Inductive atomic : o -> Prop :=
+Variant atomic : o -> Prop :=
   | Is_atom : forall p n, atomic (Atom p n)
 .
 
@@ -35,23 +35,23 @@ Inductive negative : o -> Prop :=
   | Neg_imp : forall A B, negative (Impl A B)
 .
 
-(*bracketable corresponds to formulae that can be put in brackets,
- is either positive formula or negative atoms,
- used in rule ufcLJF_R_box*)
-Inductive bracketable : o -> Prop :=
+(* bracketable corresponds to formulae that can be put in brackets,
+   is either positive formula or negative atoms,
+   used in rule ufcLJF_R_box *)
+Variant bracketable : o -> Prop :=
   | Bracketable_pos : forall D, positive D -> bracketable D
   | Bracketable_neg_atom : forall D, atomic D -> negative D -> bracketable D
 .
 
-(*permeable corresponds to formulae that can be switched from linear context to structural,
-is either negative formula or positive atom,
-used in rule ufcLJF_L_box*)
-Inductive permeable : o -> Prop :=
+(* permeable corresponds to formulae that can be switched from linear context to structural,
+  is either negative formula or positive atom,
+   used in rule ufcLJF_L_box *)
+Variant permeable : o -> Prop :=
   | Permeable_neg : forall C, negative C -> permeable C
   | Permeable_pos_atom : forall C, atomic C -> positive C -> permeable C
 .
 
-Inductive state : Type :=
+Variant state : Type :=
   | Bracketed : state
   | Unbracketed : state.
 
